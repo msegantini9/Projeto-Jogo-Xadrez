@@ -18,10 +18,44 @@
             return Pieces[line, column];
         }
 
+        public Piece Piece(Position pos)
+        {
+            return Pieces[pos.Line, pos.Column];
+        }
+
+        public bool PieceExists(Position pos)
+        {
+            ValidatePosition(pos);
+            return Piece(pos) != null;
+        }
+
         public void AddPiece(Piece p, Position pos)
         {
+            if(PieceExists(pos))
+            {
+                throw new BoardException("Já existe uma peça nesta posição");
+            }
+
             Pieces[pos.Line, pos.Column] = p;
             p.Position = pos;
+        }
+
+        public bool ValidPosition(Position pos)
+        {
+            if(pos.Line < 0 || pos.Column < 0 || pos.Line >= Lines || pos.Column >= Columns)
+            {
+                return false;
+            }
+
+            return true;         
+        }
+
+        public void ValidatePosition(Position pos)
+        {
+            if (!ValidPosition(pos))
+            {
+                throw new BoardException("Posição inválida!");
+            }
         }
     }
 }
