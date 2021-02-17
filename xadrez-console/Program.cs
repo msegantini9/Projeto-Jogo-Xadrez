@@ -10,15 +10,9 @@ namespace xadrez_console
         {
             try
             {
-                Board board = new Board(8, 8);
+                ChessMatch chessMatch = new ChessMatch();
 
-                board.AddPiece(new Rook(board, Color.Black), new Position(0, 0));
-                board.AddPiece(new Rook(board, Color.Black), new Position(1, 3));
-                board.AddPiece(new King(board, Color.Black), new Position(0, 2));
-
-                board.AddPiece(new Rook(board, Color.White), new Position(3, 5));
-
-                Screen.PrintBoard(board);
+                Screen.PrintBoard(chessMatch.Board);
             }
             catch (BoardException e)
             {
