@@ -6,8 +6,8 @@ namespace xadrez_console.chess
     class ChessMatch
     {
         public Board Board { get; private set; }
-        private int Shift;
-        private Color CurrentPlayer;
+        public int Shift { get; private set; }
+        public Color CurrentPlayer { get; private set; }
         public bool Finished { get; private set; }
 
         public ChessMatch()
@@ -17,6 +17,49 @@ namespace xadrez_console.chess
             CurrentPlayer = Color.White;
             AddPiece();
             Finished = false;
+        }
+
+        public void PeformMove(Position origin, Position destiny)
+        {
+           PeformMovement(origin, destiny);
+           Shift++;
+           ChangePlayer();
+        }
+
+        public void ValidateOriginPosition(Position pos)
+        {
+            if(Board.Piece(pos) == null)
+            {
+                throw new BoardException("Não existe peça na posição escolhida!");
+            }
+            if(CurrentPlayer != Board.Piece(pos).Color)
+            {
+                throw new BoardException("A peça escolhida não é sua!");
+            }
+            if (!Board.Piece(pos).ThereIsPossibleMovement())
+            {
+                throw new BoardException("Não há movimentos possiveis para a peça de origem escolhida!");
+            }
+        }
+
+        public void ValidateDestinyPosition(Position origin, Position destiny)
+        {
+            if (!Board.Piece(origin).CanMoveTo(destiny))
+            {
+                throw new BoardException("Posição de destino inválida!");
+            }
+        }
+
+        public void ChangePlayer()
+        {
+            if(CurrentPlayer == Color.White)
+            {
+                CurrentPlayer = Color.Black;
+            }
+            else
+            {
+                CurrentPlayer = Color.White;
+            }
         }
 
         public void PeformMovement(Position origin, Position destiny)
