@@ -49,7 +49,7 @@
             Piece aux = Piece(pos);
             aux.Position = null;
             Pieces[pos.Line, pos.Column] = null;
-            return null;
+            return aux;
         }
 
         public bool ValidPosition(Position pos)

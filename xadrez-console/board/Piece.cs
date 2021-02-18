@@ -17,7 +17,7 @@
 
         public void IncrementMovement()
         {
-            NumberOfMovements++;
+            //NumberOfMovements++;
         }
     }
 }

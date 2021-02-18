@@ -8,6 +8,7 @@ namespace xadrez_console.chess
         public Board Board { get; private set; }
         private int Shift;
         private Color CurrentPlayer;
+        public bool Finished { get; private set; }
 
         public ChessMatch()
         {
@@ -15,6 +16,7 @@ namespace xadrez_console.chess
             Shift = 1;
             CurrentPlayer = Color.White;
             AddPiece();
+            Finished = false;
         }
 
         public void PeformMovement(Position origin, Position destiny)
