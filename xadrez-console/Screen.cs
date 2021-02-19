@@ -59,6 +59,11 @@ namespace xadrez_console
             Console.WriteLine();
             Console.WriteLine("Shift: " + macth.Shift);
             Console.WriteLine("Awaiting move: " + macth.CurrentPlayer);
+
+            if (macth.Check)
+            {
+                Console.WriteLine("CHECK!");
+            }
         }
 
         public static void PrintCapturedPieces(ChessMatch macth)

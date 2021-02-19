@@ -9,6 +9,8 @@ namespace xadrez_console.chess
         public int Shift { get; private set; }
         public Color CurrentPlayer { get; private set; }
         public bool Finished { get; private set; }
+        public bool Check { get; private set; }
+
         private HashSet<Piece> Pieces;
         private HashSet<Piece> Captured;
 
@@ -18,16 +20,10 @@ namespace xadrez_console.chess
             Shift = 1;
             CurrentPlayer = Color.White;
             Finished = false;
+            Check = false;
             Pieces = new HashSet<Piece>();
             Captured = new HashSet<Piece>();
             AddPiece();
-        }
-
-        public void PeformMove(Position origin, Position destiny)
-        {
-            PeformMovement(origin, destiny);
-            Shift++;
-            ChangePlayer();
         }
 
         public void ValidateOriginPosition(Position pos)
@@ -66,16 +62,54 @@ namespace xadrez_console.chess
             }
         }
 
-        public void PeformMovement(Position origin, Position destiny)
+        public void UndoMovement(Position origin, Position destiny, Piece removedPiece)
+        {
+            Piece p = Board.RemovePiece(destiny);
+            p.DecrementMovement();
+            if(removedPiece != null)
+            {
+                Board.AddPiece(removedPiece, destiny);
+                Captured.Remove(removedPiece);
+            }
+            Board.AddPiece(p, origin);
+        }
+
+        public void PeformMove(Position origin, Position destiny)
+        {
+            Piece removedPiece = PeformMovement(origin, destiny);
+
+            if (IsInCheck(CurrentPlayer))
+            {
+                UndoMovement(origin, destiny, removedPiece);
+                throw new BoardException("You can't put yourself in check!");
+            }
+
+            if (IsInCheck(Adversary(CurrentPlayer)))
+            {
+                Check = true;
+            }
+            else
+            {
+                Check = false;
+            }
+
+            Shift++;
+            ChangePlayer();
+        }
+
+        public Piece PeformMovement(Position origin, Position destiny)
         {
             Piece p = Board.RemovePiece(origin);
             p.IncrementMovement();
             Piece removedPiece = Board.RemovePiece(destiny);
             Board.AddPiece(p, destiny);
+
             if (removedPiece != null)
             {
                 Captured.Add(removedPiece);
             }
+
+            return removedPiece;
         }
 
         public HashSet<Piece> CapturedPieces(Color color)
@@ -96,7 +130,7 @@ namespace xadrez_console.chess
         {
             HashSet<Piece> aux = new HashSet<Piece>();
 
-            foreach (Piece x in Captured)
+            foreach (Piece x in Pieces)
             {
                 if (x.Color == color)
                 {
@@ -107,6 +141,52 @@ namespace xadrez_console.chess
             aux.ExceptWith(CapturedPieces(color));
 
             return aux;
+        }
+
+        private Color Adversary(Color color)
+        {
+            if(color == Color.White)
+            {
+                return Color.Black;
+            }
+            else
+            {
+                return Color.White;
+            }
+        }
+
+        private Piece King(Color color)
+        {
+            foreach(Piece x in PieceInMacth(color))
+            {
+                if(x is King)
+                {
+                    return x;
+                }
+            }
+
+            return null;
+        }
+
+        public bool IsInCheck(Color color)
+        {
+            Piece king = King(color);
+            if(king == null)
+            {
+                throw new BoardException("There is no " + color + " king on the board!");
+            }
+
+            foreach(Piece x in PieceInMacth(Adversary(color)))
+            {
+                bool[,] matrix = x.PossibleMoviments();
+
+                if (matrix[king.Position.Line, king.Position.Column])
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void AddNewPiece(char column, int line, Piece piece)
