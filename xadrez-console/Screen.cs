@@ -8,7 +8,7 @@ namespace xadrez_console
     class Screen
     {
         public static void PrintBoard(Board board)
-        { 
+        {
 
             for (int i = 0; i < board.Lines; i++)
             {
@@ -58,11 +58,20 @@ namespace xadrez_console
 
             Console.WriteLine();
             Console.WriteLine("Shift: " + macth.Shift);
-            Console.WriteLine("Awaiting move: " + macth.CurrentPlayer);
 
-            if (macth.Check)
+            if (!macth.Finished)
             {
-                Console.WriteLine("CHECK!");
+                Console.WriteLine("Awaiting move: " + macth.CurrentPlayer);
+
+                if (macth.Check)
+                {
+                    Console.WriteLine("CHECK!");
+                }
+            }
+            else
+            {
+                Console.WriteLine("CHECKMATE!");
+                Console.WriteLine("Vencedor: " + macth.Adversary(macth.CurrentPlayer));
             }
         }
 
@@ -85,7 +94,7 @@ namespace xadrez_console
         {
             Console.Write("[");
 
-            foreach(Piece x in group)
+            foreach (Piece x in group)
             {
                 Console.Write(x + ", ");
             }
@@ -102,7 +111,7 @@ namespace xadrez_console
 
         public static void PrintPiece(Piece piece)
         {
-            if(piece == null)
+            if (piece == null)
             {
                 Console.Write("- ");
             }

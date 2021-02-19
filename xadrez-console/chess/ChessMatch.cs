@@ -148,7 +148,7 @@ namespace xadrez_console.chess
             return aux;
         }
 
-        private Color Adversary(Color color)
+        public Color Adversary(Color color)
         {
             if(color == Color.White)
             {
@@ -211,10 +211,11 @@ namespace xadrez_console.chess
                     {
                         if (matrix[i, j])
                         {
+                            Position origin = x.Position;
                             Position destiny = new Position(i, j);
-                            Piece capturedPiece = PeformMovement(x.Position, new Position(i, j));
+                            Piece capturedPiece = PeformMovement(origin, destiny);
                             bool checkTest = IsInCheck(color);
-                            UndoMovement(x.Position, destiny, capturedPiece);
+                            UndoMovement(origin, destiny, capturedPiece);
 
                             if (!checkTest)
                             {
@@ -235,6 +236,7 @@ namespace xadrez_console.chess
 
         private void AddPiece()
         {
+            /*
             AddNewPiece('c', 1, new Rook(Board, Color.White));
             AddNewPiece('c', 2, new Rook(Board, Color.White));
             AddNewPiece('d', 2, new Rook(Board, Color.White));
@@ -248,6 +250,15 @@ namespace xadrez_console.chess
             AddNewPiece('e', 7, new Rook(Board, Color.Black));
             AddNewPiece('e', 8, new Rook(Board, Color.Black));
             AddNewPiece('d', 8, new King(Board, Color.Black));
+
+            */
+
+            AddNewPiece('c', 1, new Rook(Board, Color.White));
+            AddNewPiece('d', 1, new King(Board, Color.White));
+            AddNewPiece('h', 7, new Rook(Board, Color.White));
+
+            AddNewPiece('a', 8, new King(Board, Color.Black));
+            AddNewPiece('b', 8, new Rook(Board, Color.Black));
         }
     }
 }
