@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using xadrez_console.board;
 using xadrez_console.chess;
 
@@ -46,6 +47,44 @@ namespace xadrez_console
             }
             Console.WriteLine("  a b c d e f g h");
             Console.BackgroundColor = originalColor;
+        }
+
+        public static void PrintMacth(ChessMatch macth)
+        {
+            PrintBoard(macth.Board);
+
+            Console.WriteLine();
+            PrintCapturedPieces(macth);
+
+            Console.WriteLine();
+            Console.WriteLine("Shift: " + macth.Shift);
+            Console.WriteLine("Awaiting move: " + macth.CurrentPlayer);
+        }
+
+        public static void PrintCapturedPieces(ChessMatch macth)
+        {
+            Console.WriteLine("Captured pieces:");
+            Console.Write("Whites: ");
+            PrintGroup(macth.CapturedPieces(Color.White));
+            Console.WriteLine();
+
+            Console.Write("Blacks: ");
+            ConsoleColor aux = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            PrintGroup(macth.CapturedPieces(Color.Black));
+            Console.ForegroundColor = aux;
+            Console.WriteLine();
+        }
+
+        public static void PrintGroup(HashSet<Piece> group)
+        {
+            Console.Write("[");
+
+            foreach(Piece x in group)
+            {
+                Console.Write(x + ", ");
+            }
+            Console.Write("]");
         }
 
         public static ChessPosition ReadChessPosition()

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using xadrez_console.board;
 
 namespace xadrez_console.chess
@@ -9,36 +9,40 @@ namespace xadrez_console.chess
         public int Shift { get; private set; }
         public Color CurrentPlayer { get; private set; }
         public bool Finished { get; private set; }
+        private HashSet<Piece> Pieces;
+        private HashSet<Piece> Captured;
 
         public ChessMatch()
         {
             Board = new Board(8, 8);
             Shift = 1;
             CurrentPlayer = Color.White;
-            AddPiece();
             Finished = false;
+            Pieces = new HashSet<Piece>();
+            Captured = new HashSet<Piece>();
+            AddPiece();
         }
 
         public void PeformMove(Position origin, Position destiny)
         {
-           PeformMovement(origin, destiny);
-           Shift++;
-           ChangePlayer();
+            PeformMovement(origin, destiny);
+            Shift++;
+            ChangePlayer();
         }
 
         public void ValidateOriginPosition(Position pos)
         {
-            if(Board.Piece(pos) == null)
+            if (Board.Piece(pos) == null)
             {
-                throw new BoardException("Não existe peça na posição escolhida!");
+                throw new BoardException("There is no part in the chosen position!");
             }
-            if(CurrentPlayer != Board.Piece(pos).Color)
+            if (CurrentPlayer != Board.Piece(pos).Color)
             {
-                throw new BoardException("A peça escolhida não é sua!");
+                throw new BoardException("The piece chosen is not yours!");
             }
             if (!Board.Piece(pos).ThereIsPossibleMovement())
             {
-                throw new BoardException("Não há movimentos possiveis para a peça de origem escolhida!");
+                throw new BoardException("There are no possible movements for the chosen piece of origin!");
             }
         }
 
@@ -46,13 +50,13 @@ namespace xadrez_console.chess
         {
             if (!Board.Piece(origin).CanMoveTo(destiny))
             {
-                throw new BoardException("Posição de destino inválida!");
+                throw new BoardException("Invalid destiny position!");
             }
         }
 
         public void ChangePlayer()
         {
-            if(CurrentPlayer == Color.White)
+            if (CurrentPlayer == Color.White)
             {
                 CurrentPlayer = Color.Black;
             }
@@ -66,26 +70,66 @@ namespace xadrez_console.chess
         {
             Piece p = Board.RemovePiece(origin);
             p.IncrementMovement();
-            Piece pieceRemoved = Board.RemovePiece(destiny);
+            Piece removedPiece = Board.RemovePiece(destiny);
             Board.AddPiece(p, destiny);
+            if (removedPiece != null)
+            {
+                Captured.Add(removedPiece);
+            }
+        }
+
+        public HashSet<Piece> CapturedPieces(Color color)
+        {
+            HashSet<Piece> aux = new HashSet<Piece>();
+            foreach (Piece x in Captured)
+            {
+                if (x.Color == color)
+                {
+                    aux.Add(x);
+                }
+            }
+
+            return aux;
+        }
+
+        public HashSet<Piece> PieceInMacth(Color color)
+        {
+            HashSet<Piece> aux = new HashSet<Piece>();
+
+            foreach (Piece x in Captured)
+            {
+                if (x.Color == color)
+                {
+                    aux.Add(x);
+                }
+            }
+
+            aux.ExceptWith(CapturedPieces(color));
+
+            return aux;
+        }
+
+        public void AddNewPiece(char column, int line, Piece piece)
+        {
+            Board.AddPiece(piece, new ChessPosition(column, line).ToPosition());
+            Pieces.Add(piece);
         }
 
         private void AddPiece()
         {
-            Board.AddPiece(new Rook(Board, Color.White), new ChessPosition('c', 1).ToPosition());
-            Board.AddPiece(new Rook(Board, Color.White), new ChessPosition('c', 2).ToPosition());
-            Board.AddPiece(new Rook(Board, Color.White), new ChessPosition('d', 2).ToPosition());
-            Board.AddPiece(new Rook(Board, Color.White), new ChessPosition('e', 2).ToPosition());
-            Board.AddPiece(new Rook(Board, Color.White), new ChessPosition('e', 1).ToPosition());
-            Board.AddPiece(new King(Board, Color.White), new ChessPosition('d', 1).ToPosition());
+            AddNewPiece('c', 1, new Rook(Board, Color.White));
+            AddNewPiece('c', 2, new Rook(Board, Color.White));
+            AddNewPiece('d', 2, new Rook(Board, Color.White));
+            AddNewPiece('e', 2, new Rook(Board, Color.White));
+            AddNewPiece('e', 1, new Rook(Board, Color.White));
+            AddNewPiece('d', 1, new King(Board, Color.White));
 
-            Board.AddPiece(new Rook(Board, Color.Black), new ChessPosition('c', 7).ToPosition());
-            Board.AddPiece(new Rook(Board, Color.Black), new ChessPosition('c', 8).ToPosition());
-            Board.AddPiece(new Rook(Board, Color.Black), new ChessPosition('d', 7).ToPosition());
-            Board.AddPiece(new Rook(Board, Color.Black), new ChessPosition('e', 7).ToPosition());
-            Board.AddPiece(new Rook(Board, Color.Black), new ChessPosition('e', 8).ToPosition());
-            Board.AddPiece(new King(Board, Color.Black), new ChessPosition('d', 8).ToPosition());
-
+            AddNewPiece('c', 7, new Rook(Board, Color.Black));
+            AddNewPiece('c', 8, new Rook(Board, Color.Black));
+            AddNewPiece('d', 7, new Rook(Board, Color.Black));
+            AddNewPiece('e', 7, new Rook(Board, Color.Black));
+            AddNewPiece('e', 8, new Rook(Board, Color.Black));
+            AddNewPiece('d', 8, new King(Board, Color.Black));
         }
     }
 }
