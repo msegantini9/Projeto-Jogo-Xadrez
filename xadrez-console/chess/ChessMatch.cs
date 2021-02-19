@@ -93,6 +93,11 @@ namespace xadrez_console.chess
                 Check = false;
             }
 
+            if (CheckmateTest(Adversary(CurrentPlayer)))
+            {
+                Finished = true;
+            }
+
             Shift++;
             ChangePlayer();
         }
@@ -187,6 +192,39 @@ namespace xadrez_console.chess
             }
 
             return false;
+        }
+
+        public bool CheckmateTest(Color color)
+        {
+            if (!IsInCheck(color))
+            {
+                return false;
+            }
+
+            foreach(Piece x in PieceInMacth(color))
+            {
+                bool[,] matrix = x.PossibleMoviments();
+
+                for (int i = 0; i < Board.Lines; i++)
+                {
+                    for (int j = 0; j < Board.Columns; j++)
+                    {
+                        if (matrix[i, j])
+                        {
+                            Position destiny = new Position(i, j);
+                            Piece capturedPiece = PeformMovement(x.Position, new Position(i, j));
+                            bool checkTest = IsInCheck(color);
+                            UndoMovement(x.Position, destiny, capturedPiece);
+
+                            if (!checkTest)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
         }
 
         public void AddNewPiece(char column, int line, Piece piece)
