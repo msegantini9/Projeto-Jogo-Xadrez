@@ -129,7 +129,7 @@ namespace xadrez_console.chess
 
             Piece p = Board.Piece(destiny);
 
-            // #jogadaespecial promocao
+            // #jogada especial promocao
             if (p is Pawn)
             {
                 if ((p.Color == Color.White && destiny.Line == 0) || (p.Color == Color.Black && destiny.Line == 7))
