@@ -24,53 +24,100 @@ namespace xadrez_console.chess
             bool[,] matrix = new bool[Board.Lines, Board.Columns];
             Position pos = new Position(0, 0);
 
-            //N
-            pos.SetValues(Position.Line - 1, Position.Column);
-            if (Board.ValidPosition(pos) && CanMove(pos))
-            {
-                matrix[pos.Line, pos.Column] = true;
-            }
-            //NE
-            pos.SetValues(Position.Line - 1, Position.Column + 1);
-            if (Board.ValidPosition(pos) && CanMove(pos))
-            {
-                matrix[pos.Line, pos.Column] = true;
-            }
-            //L
-            pos.SetValues(Position.Line, Position.Column + 1);
-            if (Board.ValidPosition(pos) && CanMove(pos))
-            {
-                matrix[pos.Line, pos.Column] = true;
-            }
-            //SE
-            pos.SetValues(Position.Line + 1, Position.Column + 1);
-            if (Board.ValidPosition(pos) && CanMove(pos))
-            {
-                matrix[pos.Line, pos.Column] = true;
-            }
-            //S
-            pos.SetValues(Position.Line + 1, Position.Column);
-            if (Board.ValidPosition(pos) && CanMove(pos))
-            {
-                matrix[pos.Line, pos.Column] = true;
-            }
-            //SO
-            pos.SetValues(Position.Line + 1, Position.Column - 1);
-            if (Board.ValidPosition(pos) && CanMove(pos))
-            {
-                matrix[pos.Line, pos.Column] = true;
-            }
-            //O
+            // esquerda
             pos.SetValues(Position.Line, Position.Column - 1);
-            if (Board.ValidPosition(pos) && CanMove(pos))
+            while (Board.ValidPosition(pos) && CanMove(pos))
             {
                 matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line, pos.Column - 1);
             }
-            //NO
-            pos.SetValues(Position.Line - 1, Position.Column - 1);
-            if (Board.ValidPosition(pos) && CanMove(pos))
+
+            // direita
+            pos.SetValues(Position.Line, Position.Column + 1);
+            while (Board.ValidPosition(pos) && CanMove(pos))
             {
                 matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line, pos.Column + 1);
+            }
+
+            // acima
+            pos.SetValues(Position.Line - 1, Position.Column);
+            while (Board.ValidPosition(pos) && CanMove(pos))
+            {
+                matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line - 1, pos.Column);
+            }
+
+            // abaixo
+            pos.SetValues(Position.Line + 1, Position.Column);
+            while (Board.ValidPosition(pos) && CanMove(pos))
+            {
+                matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line + 1, pos.Column);
+            }
+
+            // NO
+            pos.SetValues(Position.Line - 1, Position.Column - 1);
+            while (Board.ValidPosition(pos) && CanMove(pos))
+            {
+                matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line - 1, pos.Column - 1);
+            }
+
+            // NE
+            pos.SetValues(Position.Line - 1, Position.Column + 1);
+            while (Board.ValidPosition(pos) && CanMove(pos))
+            {
+                matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line - 1, pos.Column + 1);
+            }
+
+            // SE
+            pos.SetValues(Position.Line + 1, Position.Column + 1);
+            while (Board.ValidPosition(pos) && CanMove(pos))
+            {
+                matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line + 1, pos.Column + 1);
+            }
+
+            // SO
+            pos.SetValues(Position.Line + 1, Position.Column - 1);
+            while (Board.ValidPosition(pos) && CanMove(pos))
+            {
+                matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line + 1, pos.Column - 1);
             }
 
             return matrix;

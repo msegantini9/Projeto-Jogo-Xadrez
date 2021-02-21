@@ -4,8 +4,11 @@ namespace xadrez_console.chess
 {
     class Pawn : Piece
     {
-        public Pawn(Board board, Color color) : base(board, color)
+        private ChessMatch Match;
+
+        public Pawn(Board board, Color color, ChessMatch match) : base(board, color)
         {
+            Match = match;
         }
 
         public override string ToString()
@@ -38,7 +41,8 @@ namespace xadrez_console.chess
                 }
 
                 pos.SetValues(Position.Line - 2, Position.Column);
-                if (Board.ValidPosition(pos) && Clear(pos) && NumberOfMovements == 0)
+                Position p2 = new Position(Position.Line - 1, Position.Column);
+                if (Board.ValidPosition(p2) && Clear(p2) && NumberOfMovements == 0 && Board.ValidPosition(pos) && Clear(pos))
                 {
                     matrix[pos.Line, pos.Column] = true;
                 }
@@ -54,6 +58,23 @@ namespace xadrez_console.chess
                 {
                     matrix[pos.Line, pos.Column] = true;
                 }
+
+                //Jogada especial en passant
+
+                if(Position.Line == 3)
+                {
+                    Position left = new Position(Position.Line, Position.Column - 1);
+                    if(Board.ValidPosition(left) && ThereIsEnemy(left) && Board.Piece(left) == Match.VulnerableEnPassant)
+                    {
+                        matrix[left.Line - 1, left.Column] = true;
+                    }
+
+                    Position rigth = new Position(Position.Line, Position.Column + 1);
+                    if (Board.ValidPosition(rigth) && ThereIsEnemy(rigth) && Board.Piece(rigth) == Match.VulnerableEnPassant)
+                    {
+                        matrix[rigth.Line - 1, left.Column] = true;
+                    }
+                }
             }
             else
             {
@@ -64,7 +85,8 @@ namespace xadrez_console.chess
                 }
 
                 pos.SetValues(Position.Line + 2, Position.Column);
-                if (Board.ValidPosition(pos) && Clear(pos) && NumberOfMovements == 0)
+                Position p2 = new Position(Position.Line + 1, Position.Column);
+                if (Board.ValidPosition(p2) && Clear(p2) && NumberOfMovements == 0 && Board.ValidPosition(pos) && Clear(pos))
                 {
                     matrix[pos.Line, pos.Column] = true;
                 }
@@ -79,6 +101,23 @@ namespace xadrez_console.chess
                 if (Board.ValidPosition(pos) && ThereIsEnemy(pos))
                 {
                     matrix[pos.Line, pos.Column] = true;
+                }
+
+                //Jogada especial en passant
+
+                if (Position.Line == 4)
+                {
+                    Position left = new Position(Position.Line, Position.Column - 1);
+                    if (Board.ValidPosition(left) && ThereIsEnemy(left) && Board.Piece(left) == Match.VulnerableEnPassant)
+                    {
+                        matrix[left.Line + 1, left.Column] = true;
+                    }
+
+                    Position rigth = new Position(Position.Line, Position.Column + 1);
+                    if (Board.ValidPosition(rigth) && ThereIsEnemy(rigth) && Board.Piece(rigth) == Match.VulnerableEnPassant)
+                    {
+                        matrix[rigth.Line + 1, left.Column] = true;
+                    }
                 }
             }
 

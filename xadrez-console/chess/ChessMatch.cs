@@ -10,6 +10,7 @@ namespace xadrez_console.chess
         public Color CurrentPlayer { get; private set; }
         public bool Finished { get; private set; }
         public bool Check { get; private set; }
+        public Piece VulnerableEnPassant { get; private set; }
 
         private HashSet<Piece> Pieces;
         private HashSet<Piece> Captured;
@@ -21,6 +22,7 @@ namespace xadrez_console.chess
             CurrentPlayer = Color.White;
             Finished = false;
             Check = false;
+            VulnerableEnPassant = null;
             Pieces = new HashSet<Piece>();
             Captured = new HashSet<Piece>();
             AddPiece();
@@ -72,6 +74,47 @@ namespace xadrez_console.chess
                 Captured.Remove(removedPiece);
             }
             Board.AddPiece(p, origin);
+
+            // # jogada especial roque pequeno
+
+            if (p is King && destiny.Column == origin.Column + 2)
+            {
+                Position originR = new Position(origin.Line, origin.Column + 3);
+                Position destinyR = new Position(origin.Line, origin.Column + 1);
+                Piece R = Board.RemovePiece(destinyR);
+                R.DecrementMovement();
+                Board.AddPiece(R, originR);
+            }
+
+            // # jogada especial roque grande
+
+            if (p is King && destiny.Column == origin.Column - 2)
+            {
+                Position originR = new Position(origin.Line, origin.Column - 4);
+                Position destinyR = new Position(origin.Line, origin.Column - 1);
+                Piece R = Board.RemovePiece(destinyR);
+                R.DecrementMovement();
+                Board.AddPiece(R, originR);
+            }
+
+            // #jogadaespecial en passant
+            if (p is Pawn)
+            {
+                if (origin.Column != destiny.Column && removedPiece == VulnerableEnPassant)
+                {
+                    Piece pawn = Board.RemovePiece(destiny);
+                    Position posP;
+                    if (p.Color == Color.White)
+                    {
+                        posP = new Position(3, destiny.Column);
+                    }
+                    else
+                    {
+                        posP = new Position(4, destiny.Column);
+                    }
+                    Board.AddPiece(pawn, posP);
+                }
+            }
         }
 
         public void PeformMove(Position origin, Position destiny)
@@ -84,9 +127,24 @@ namespace xadrez_console.chess
                 throw new BoardException("You can't put yourself in check!");
             }
 
+            Piece p = Board.Piece(destiny);
+
+            // #jogadaespecial promocao
+            if (p is Pawn)
+            {
+                if ((p.Color == Color.White && destiny.Line == 0) || (p.Color == Color.Black && destiny.Line == 7))
+                {
+                    p = Board.RemovePiece(destiny);
+                    Pieces.Remove(p);
+                    Piece queen = new Queen(Board, p.Color);
+                    Board.AddPiece(queen, destiny);
+                    Pieces.Add(queen);
+                }
+            }
+
             if (IsInCheck(Adversary(CurrentPlayer)))
             {
-                Check = true;
+                //Check = true;
             }
             else
             {
@@ -97,9 +155,21 @@ namespace xadrez_console.chess
             {
                 Finished = true;
             }
+            else
+            {
+                Shift++;
+                ChangePlayer();
+            }
 
-            Shift++;
-            ChangePlayer();
+            // #jogadaespecial en passant
+            if (p is Pawn && (destiny.Line == origin.Line - 2 || destiny.Line == origin.Line + 2))
+            {
+                VulnerableEnPassant = p;
+            }
+            else
+            {
+                VulnerableEnPassant = null;
+            }
         }
 
         public Piece PeformMovement(Position origin, Position destiny)
@@ -112,6 +182,47 @@ namespace xadrez_console.chess
             if (removedPiece != null)
             {
                 Captured.Add(removedPiece);
+            }
+
+            // # jogada especial roque pequeno
+
+            if(p is King && destiny.Column == origin.Column + 2)
+            {
+                Position originR = new Position(origin.Line, origin.Column + 3);
+                Position destinyR = new Position(origin.Line, origin.Column + 1);
+                Piece R = Board.RemovePiece(originR);
+                R.IncrementMovement();
+                Board.AddPiece(R, destinyR);
+            }
+
+            // # jogada especial roque grande
+
+            if (p is King && destiny.Column == origin.Column - 2)
+            {
+                Position originR = new Position(origin.Line, origin.Column - 4);
+                Position destinyR = new Position(origin.Line, origin.Column - 1);
+                Piece R = Board.RemovePiece(originR);
+                R.IncrementMovement();
+                Board.AddPiece(R, destinyR);
+            }
+
+            // #jogadaespecial en passant
+            if (p is Pawn)
+            {
+                if (origin.Column != destiny.Column && removedPiece == null)
+                {
+                    Position posP;
+                    if (p.Color == Color.White)
+                    {
+                        posP = new Position(destiny.Line + 1, destiny.Column);
+                    }
+                    else
+                    {
+                        posP = new Position(destiny.Line - 1, destiny.Column);
+                    }
+                    removedPiece = Board.RemovePiece(posP);
+                    Captured.Add(removedPiece);
+                }
             }
 
             return removedPiece;
@@ -241,36 +352,36 @@ namespace xadrez_console.chess
             AddNewPiece('b', 1, new Knight(Board, Color.White));
             AddNewPiece('c', 1, new Bishop(Board, Color.White));
             AddNewPiece('d', 1, new Queen(Board, Color.White));
-            AddNewPiece('e', 1, new King(Board, Color.White));
+            AddNewPiece('e', 1, new King(Board, Color.White, this));
             AddNewPiece('f', 1, new Bishop(Board, Color.White));
             AddNewPiece('g', 1, new Knight(Board, Color.White));
             AddNewPiece('h', 1, new Rook(Board, Color.White));
-            AddNewPiece('a', 2, new Pawn(Board, Color.White));
-            AddNewPiece('b', 2, new Pawn(Board, Color.White));
-            AddNewPiece('c', 2, new Pawn(Board, Color.White));
-            AddNewPiece('d', 2, new Pawn(Board, Color.White));
-            AddNewPiece('e', 2, new Pawn(Board, Color.White));
-            AddNewPiece('f', 2, new Pawn(Board, Color.White));
-            AddNewPiece('g', 2, new Pawn(Board, Color.White));
-            AddNewPiece('h', 2, new Pawn(Board, Color.White));
+            AddNewPiece('a', 2, new Pawn(Board, Color.White, this));
+            AddNewPiece('b', 2, new Pawn(Board, Color.White, this));
+            AddNewPiece('c', 2, new Pawn(Board, Color.White, this));
+            AddNewPiece('d', 2, new Pawn(Board, Color.White, this));
+            AddNewPiece('e', 2, new Pawn(Board, Color.White, this));
+            AddNewPiece('f', 2, new Pawn(Board, Color.White, this));
+            AddNewPiece('g', 2, new Pawn(Board, Color.White, this));
+            AddNewPiece('h', 2, new Pawn(Board, Color.White, this));
 
-            //BLACk
+            //BLACK
             AddNewPiece('a', 8, new Rook(Board, Color.Black));
             AddNewPiece('b', 8, new Knight(Board, Color.Black));
             AddNewPiece('c', 8, new Bishop(Board, Color.Black));
             AddNewPiece('d', 8, new Queen(Board, Color.Black));
-            AddNewPiece('e', 8, new King(Board, Color.Black));
+            AddNewPiece('e', 8, new King(Board, Color.Black, this));
             AddNewPiece('f', 8, new Bishop(Board, Color.Black));
             AddNewPiece('g', 8, new Knight(Board, Color.Black));
             AddNewPiece('h', 8, new Rook(Board, Color.Black));
-            AddNewPiece('a', 7, new Pawn(Board, Color.Black));
-            AddNewPiece('b', 7, new Pawn(Board, Color.Black));
-            AddNewPiece('c', 7, new Pawn(Board, Color.Black));
-            AddNewPiece('d', 7, new Pawn(Board, Color.Black));
-            AddNewPiece('e', 7, new Pawn(Board, Color.Black));
-            AddNewPiece('f', 7, new Pawn(Board, Color.Black));
-            AddNewPiece('g', 7, new Pawn(Board, Color.Black));
-            AddNewPiece('h', 7, new Pawn(Board, Color.Black));
+            AddNewPiece('a', 7, new Pawn(Board, Color.Black, this));
+            AddNewPiece('b', 7, new Pawn(Board, Color.Black, this));
+            AddNewPiece('c', 7, new Pawn(Board, Color.Black, this));
+            AddNewPiece('d', 7, new Pawn(Board, Color.Black, this));
+            AddNewPiece('e', 7, new Pawn(Board, Color.Black, this));
+            AddNewPiece('f', 7, new Pawn(Board, Color.Black, this));
+            AddNewPiece('g', 7, new Pawn(Board, Color.Black, this));
+            AddNewPiece('h', 7, new Pawn(Board, Color.Black, this));
         }
     }
 }

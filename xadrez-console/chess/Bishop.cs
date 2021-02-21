@@ -26,30 +26,50 @@ namespace xadrez_console.chess
 
             //NO
             pos.SetValues(Position.Line - 1, Position.Column - 1);
-            if (Board.ValidPosition(pos) && CanMove(pos))
+            while (Board.ValidPosition(pos) && CanMove(pos))
             {
                 matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line - 1, pos.Column - 1);
             }
 
             //NE
             pos.SetValues(Position.Line - 1, Position.Column + 1);
-            if (Board.ValidPosition(pos) && CanMove(pos))
+            while (Board.ValidPosition(pos) && CanMove(pos))
             {
                 matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line - 1, pos.Column + 1);
             }
 
             //SE
             pos.SetValues(Position.Line + 1, Position.Column + 1);
-            if (Board.ValidPosition(pos) && CanMove(pos))
+            while (Board.ValidPosition(pos) && CanMove(pos))
             {
                 matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line + 1, pos.Column + 1);
             }
 
             //SO
             pos.SetValues(Position.Line + 1, Position.Column - 1);
-            if (Board.ValidPosition(pos) && CanMove(pos))
+            while (Board.ValidPosition(pos) && CanMove(pos))
             {
                 matrix[pos.Line, pos.Column] = true;
+                if (Board.Piece(pos) != null && Board.Piece(pos).Color != Color)
+                {
+                    break;
+                }
+                pos.SetValues(pos.Line + 1, pos.Column - 1);
             }
 
             return matrix;
