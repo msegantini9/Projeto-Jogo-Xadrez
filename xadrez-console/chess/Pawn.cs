@@ -39,40 +39,35 @@ namespace xadrez_console.chess
                 {
                     matrix[pos.Line, pos.Column] = true;
                 }
-
                 pos.SetValues(Position.Line - 2, Position.Column);
                 Position p2 = new Position(Position.Line - 1, Position.Column);
-                if (Board.ValidPosition(p2) && Clear(p2) && NumberOfMovements == 0 && Board.ValidPosition(pos) && Clear(pos))
+                if (Board.ValidPosition(p2) && Clear(p2) && Board.ValidPosition(pos) && Clear(pos) && NumberOfMovements == 0)
                 {
                     matrix[pos.Line, pos.Column] = true;
                 }
-
                 pos.SetValues(Position.Line - 1, Position.Column - 1);
                 if (Board.ValidPosition(pos) && ThereIsEnemy(pos))
                 {
                     matrix[pos.Line, pos.Column] = true;
                 }
-
                 pos.SetValues(Position.Line - 1, Position.Column + 1);
                 if (Board.ValidPosition(pos) && ThereIsEnemy(pos))
                 {
                     matrix[pos.Line, pos.Column] = true;
                 }
 
-                //Jogada especial en passant
-
-                if(Position.Line == 3)
+                // #jogadaespecial en passant
+                if (Position.Line == 3)
                 {
-                    Position left = new Position(Position.Line, Position.Column - 1);
-                    if(Board.ValidPosition(left) && ThereIsEnemy(left) && Board.Piece(left) == Match.VulnerableEnPassant)
+                    Position esquerda = new Position(Position.Line, Position.Column - 1);
+                    if (Board.ValidPosition(esquerda) && ThereIsEnemy(esquerda) && Board.Piece(esquerda) == Match.VulnerableEnPassant)
                     {
-                        matrix[left.Line - 1, left.Column] = true;
+                        matrix[esquerda.Line - 1, esquerda.Column] = true;
                     }
-
-                    Position rigth = new Position(Position.Line, Position.Column + 1);
-                    if (Board.ValidPosition(rigth) && ThereIsEnemy(rigth) && Board.Piece(rigth) == Match.VulnerableEnPassant)
+                    Position direita = new Position(Position.Line, Position.Column + 1);
+                    if (Board.ValidPosition(direita) && ThereIsEnemy(direita) && Board.Piece(direita) == Match.VulnerableEnPassant)
                     {
-                        matrix[rigth.Line - 1, left.Column] = true;
+                        matrix[direita.Line - 1, direita.Column] = true;
                     }
                 }
             }
@@ -83,40 +78,35 @@ namespace xadrez_console.chess
                 {
                     matrix[pos.Line, pos.Column] = true;
                 }
-
                 pos.SetValues(Position.Line + 2, Position.Column);
                 Position p2 = new Position(Position.Line + 1, Position.Column);
-                if (Board.ValidPosition(p2) && Clear(p2) && NumberOfMovements == 0 && Board.ValidPosition(pos) && Clear(pos))
+                if (Board.ValidPosition(p2) && Clear(p2) && Board.ValidPosition(pos) && Clear(pos) && NumberOfMovements == 0)
                 {
                     matrix[pos.Line, pos.Column] = true;
                 }
-
+                pos.SetValues(Position.Line + 1, Position.Column - 1);
+                if (Board.ValidPosition(pos) && ThereIsEnemy(pos))
+                {
+                    matrix[pos.Line, pos.Column] = true;
+                }
                 pos.SetValues(Position.Line + 1, Position.Column + 1);
                 if (Board.ValidPosition(pos) && ThereIsEnemy(pos))
                 {
                     matrix[pos.Line, pos.Column] = true;
                 }
 
-                pos.SetValues(Position.Line + 1, Position.Column - 1);
-                if (Board.ValidPosition(pos) && ThereIsEnemy(pos))
-                {
-                    matrix[pos.Line, pos.Column] = true;
-                }
-
-                //Jogada especial en passant
-
+                // #jogadaespecial en passant
                 if (Position.Line == 4)
                 {
-                    Position left = new Position(Position.Line, Position.Column - 1);
-                    if (Board.ValidPosition(left) && ThereIsEnemy(left) && Board.Piece(left) == Match.VulnerableEnPassant)
+                    Position esquerda = new Position(Position.Line, Position.Column - 1);
+                    if (Board.ValidPosition(esquerda) && ThereIsEnemy(esquerda) && Board.Piece(esquerda) == Match.VulnerableEnPassant)
                     {
-                        matrix[left.Line + 1, left.Column] = true;
+                        matrix[esquerda.Line + 1, esquerda.Column] = true;
                     }
-
-                    Position rigth = new Position(Position.Line, Position.Column + 1);
-                    if (Board.ValidPosition(rigth) && ThereIsEnemy(rigth) && Board.Piece(rigth) == Match.VulnerableEnPassant)
+                    Position direita = new Position(Position.Line, Position.Column + 1);
+                    if (Board.ValidPosition(direita) && ThereIsEnemy(direita) && Board.Piece(direita) == Match.VulnerableEnPassant)
                     {
-                        matrix[rigth.Line + 1, left.Column] = true;
+                        matrix[direita.Line + 1, direita.Column] = true;
                     }
                 }
             }
